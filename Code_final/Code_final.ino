@@ -23,11 +23,11 @@ int hit_merken=0;
 
 #include "display.hpp"
 #include "TLx493D_inc.hpp"
-#include "airpressure_sensor.hpp"
+//#include "airpressure_sensor.hpp"
 #include "3d_sensor.hpp"
 #include "push.hpp"
 
-#include "game_matirx.hpp"
+//#include "game_matirx.hpp"
 
 
 int merken=0;
@@ -37,7 +37,7 @@ void setup() {
   Serial.begin(115200);
   delay(6000);
   init_display();
-  init_dps_sensor();
+  //init_dps_sensor();
   init_3d_sensor();
   delay(1000);
   measure_initial_values();
