@@ -81,4 +81,11 @@ void showNumber(float value) //vielleicht kann dies auch ein INT sein. Ich muss 
   digitalWrite(segmentLatch, HIGH); //Register moves storage register on the rising edge of RCK
 }
 
+
+void clearDisplay() {
+  postNumber(' ', false); // Alle Segmente ausschalten
+  postNumber(' ', false); 
+  digitalWrite(segmentLatch, LOW);
+  digitalWrite(segmentLatch, HIGH); // Register moves storage register on the rising edge of RCK
+}
 //Given a number, or '-', shifts it out to the display

@@ -2,7 +2,7 @@
 #include <tle94112-motor-ino.hpp>
 #include "SPI.h"
 
-#define duration 20
+#define duration 100
 Tle94112Ino controller = Tle94112Ino();
 
 Tle94112Motor aktor1(controller);
@@ -53,65 +53,65 @@ void push(int i)
     case 1:    // your hand is on the sensor
        aktor1.start(255);
        delay(duration);
+       aktor1.stop(0); 
        calculate_average(piston_up);
-       print_sensor_magnitudes(piston_up);
-       aktor1.stop(0);  
+       print_sensor_magnitudes(piston_up); 
       break;
     case 2:    // your hand is close to the sensor
        aktor2.start(255);
        delay(duration);
+       aktor2.stop(0);  
        calculate_average(piston_up);
        print_sensor_magnitudes(piston_up);
-       aktor2.stop(0);  
       break;
     case 3:    // your hand is a few inches from the sensor
        aktor3.start(255);
        delay(duration);
+       aktor3.stop(0);  
        calculate_average(piston_up);
        print_sensor_magnitudes(piston_up);
-       aktor3.stop(0);  
       break;
     case 4:    // your hand is nowhere near the sensor
        aktor4.start(255);
        delay(duration);
+       aktor4.stop(0); 
        calculate_average(piston_up);
-       print_sensor_magnitudes(piston_up);
-       aktor4.stop(0);  
+       print_sensor_magnitudes(piston_up); 
       break;
     case 5:    // your hand is on the sensor
        aktor5.start(255);
        delay(duration);
+       aktor5.stop(0); 
        calculate_average(piston_up);
-       print_sensor_magnitudes(piston_up);
-       aktor5.stop(0);  
+       print_sensor_magnitudes(piston_up); 
       break;
     case 6:    // your hand is close to the sensor
        aktor6.start(255);
        delay(duration);
+       aktor6.stop(0); 
        calculate_average(piston_up);
-       print_sensor_magnitudes(piston_up);
-       aktor6.stop(0);  
+       print_sensor_magnitudes(piston_up); 
       break;
     case 7:    // your hand is a few inches from the sensor
        aktor7.start(255);
        delay(duration);
+       aktor7.stop(0); 
        calculate_average(piston_up);
-       print_sensor_magnitudes(piston_up);
-       aktor7.stop(0);  
+       print_sensor_magnitudes(piston_up); 
       break;
     case 8:    // your hand is nowhere near the sensor
        aktor8.start(255);
        delay(duration);
+       aktor8.stop(0); 
        calculate_average(piston_up);
-       print_sensor_magnitudes(piston_up);
-       aktor8.stop(0);  
+       print_sensor_magnitudes(piston_up); 
       break;
     case 9:    // your hand is nowhere near the sensor
        aktor9.start(255);
        delay(duration);
+       aktor9.stop(0); 
        calculate_average(piston_up);
-       print_sensor_magnitudes(piston_up);
-       aktor9.stop(0);  
+       print_sensor_magnitudes(piston_up); 
       break;
     }
   

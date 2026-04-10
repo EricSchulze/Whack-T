@@ -185,9 +185,9 @@ bool compare_difference(double piston_stuff[sensoren][werte], double threshold)
       diff[j] = piston_stuff[i][j] - initial_sensor_values[i][j]; //ok initial_sensor_values[i][j] is needed xD
     }
     double r, theta, phi;
-    Serial.println("vorconverttosperical");
+    //Serial.println("vorconverttosperical");
     convertToSpherical(diff[0], diff[1], diff[2], r, theta, phi);
-    Serial.println("nachconverttosperical");
+    //Serial.println("nachconverttosperical");
     piston_stuff[i][0] = r;
     piston_stuff[i][1] = theta;
     piston_stuff[i][2] = phi;
@@ -196,6 +196,8 @@ bool compare_difference(double piston_stuff[sensoren][werte], double threshold)
  // Serial.println(zahlen);
   for (int i = 0; i < sensoren; i++) {
     double r_diff = abs(piston_stuff[i][0] - piston_up[i][0]);
+    //Serial.print("r_diff: ");
+    //Serial.println(r_diff);
     if (r_diff > threshold) {
       hit_counter++;
     }
@@ -210,22 +212,43 @@ bool compare_difference(double piston_stuff[sensoren][werte], double threshold)
 
 void start_game()
 {
-   if(start_counting==false)
+if(start_counting==false)
     {
-      
-      if(hammer_lift())  //if hammer is lifted
+ //   Serial.println("Loop_false");
+    /*if (Serial.available() > 0) 
+    {
+      String input = Serial.readStringUntil('\n');
+      int zahl = input.toInt();*/
+      //(hammer_lift()||
+      if(digitalRead(buttonPin))  //if hammer is lifted or button is pressed
       {
         //start countdown
         for(int i=5; i>=0; i--)
         {
            showNumber(i);
            delay(1000);
+           
         }
-       
+        analogWrite(buzzer_pin, 127);
+        for(int i=0; i<3; i++)
+        {
+          showNumber(88);
+          delay(100);
+         clearDisplay();
+          delay(100);
+        }
+        analogWrite(buzzer_pin, 0);
         startMillis = millis();
         gametime=15;
+        game_hit_counter=0;
         start_counting=true;
+
+        for (int i = 0; i < sensoren; i++) {
+          for (int j = 0; j < werte; j++) {
+            piston_up[i][j] = 0.0;
+          }
+        }
       }
-    
+    //}   
 }
 }

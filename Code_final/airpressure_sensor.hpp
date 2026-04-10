@@ -2,112 +2,137 @@
 
 // Dps3xx Object
 Dps3xx Dps3xxPressureSensor = Dps3xx();
-Dps3xx Dps3xxPressureSensor2 = Dps3xx();
-float difference_dps_sensor=0;
-bool game_begin=false;
+//Dps3xx Dps3xxPressureSensor2 = Dps3xx();
+float difference_dps_sensor = 0;
+bool game_begin = false;
 uint8_t oversampling = 7;
+const float threshold = 30.0; // Threshold in centimeters
+const int moving_average_size = 5;
+float pressure_readings[moving_average_size] = {0};
+int pressure_index = 0;
+float initial_pressure = 0;
+
 float calc_difference();
 float hight();
+float measure_initial_pressure();
+float calculate_height();
+void update_initial_pressure(float new_pressure);
+float calculate_moving_average(const float readings[], int size);
+
 void init_dps_sensor()
 {
-  Dps3xxPressureSensor.begin(Wire1, 0x76);
-  Dps3xxPressureSensor2.begin(Wire1);
-  delay(1000);
+  int ret=0;
+  float pressure=0.0;
+  do
+  {
+  Dps3xxPressureSensor.begin(Wire1);
+  ret = Dps3xxPressureSensor.measurePressureOnce(pressure, oversampling);
+  delay(50);
+  }while(ret!=0);
+//  Dps3xxPressureSensor2.begin(Wire1);
+//  delay(1000);
   Serial.println("DPS Sensor Init complete!");
-  difference_dps_sensor=calc_difference();
-  Serial.println("Difference: ");
-  Serial.print(difference_dps_sensor);
+  initial_pressure = measure_initial_pressure();
 }
 
 bool hammer_lift()
 {
-  bool logic=false;
-  float hoehe=hight();
-  if(game_begin==false)
+  bool logic = false;
+  float hoehe = calculate_height();
+  if (game_begin == false)
   {
-    if(hoehe>=30)
+    if (hoehe >= 30)
     {
-    Serial.print("Hammer oben");
-    game_begin=true;
-    logic=true;
+      Serial.print("Hammer oben");
+      Serial.println(hoehe);
+      game_begin = true;
+      logic = true;
     }
     else
     {
-    Serial.print("Hammer unten");
+      Serial.println(hoehe);
     }
   }
   else
   {
-    game_begin=false;
+    game_begin = false;
   }
   return logic;
 }
 
-float calc_difference()
-{//vielleicht hilft ein Filter
-  float pressure_init_1=0;
-  float pressure_init_1_filter=0;
-  float pressure_init_2=0;
-  float pressure_init_2_filter=0;
-  int ret=0;
-  float difference=0;
-  for(int i=0; i<10;i++)
+float measure_initial_pressure()
+{
+  float pressure = 0;
+  int ret = 0;
+
+  for (int i = 0; i < moving_average_size; ++i)
   {
     do
     {
-      ret = Dps3xxPressureSensor.measurePressureOnce(pressure_init_1, oversampling);
+      ret = Dps3xxPressureSensor.measurePressureOnce(pressure, oversampling);
+      Serial.println(ret);
+      delay(500);
+    } while (ret != 0);
 
-      delay(50);
-    }
-    while(ret!=0);
-    pressure_init_1_filter=pressure_init_1_filter+pressure_init_1;
+    update_initial_pressure(pressure);
   }
 
-  pressure_init_1_filter=pressure_init_1_filter/10;
-  for(int i=0; i<10;i++)
-  {
-    do
-    {
-      ret = Dps3xxPressureSensor2.measurePressureOnce(pressure_init_2, oversampling);
-
-      delay(50);
-    }
-    while(ret!=0);
-    pressure_init_2_filter=pressure_init_2_filter+pressure_init_2;
-
-  }
-  pressure_init_2_filter=pressure_init_2_filter/10;
-  difference=pressure_init_2_filter-pressure_init_1_filter;
-
-  return difference;
+  return initial_pressure;
 }
 
-float hight()
+void update_initial_pressure(float new_pressure)
 {
-  float pressure1;
-  float pressure2;
-  float heightDifference;
-  
-  int16_t ret;
-  const float rho = 1.225; // kg/m³ (Luftdichte bei Standardbedingungen)
-  const float g = 9.81; // m/s² (Erdbeschleunigung)
+  pressure_readings[pressure_index] = new_pressure;
+  pressure_index = (pressure_index + 1) % moving_average_size;
+  initial_pressure = calculate_moving_average(pressure_readings, moving_average_size);
+}
 
-  Serial.println();
-
- do
+float calculate_moving_average(const float readings[], int size)
+{
+  float sum = 0;
+  for (int i = 0; i < size; ++i)
   {
-    ret = Dps3xxPressureSensor.measurePressureOnce(pressure1, oversampling);
-    Serial.print(ret);
+    sum += readings[i];
   }
-  while(ret!=0);
+  return sum / size;
+}
 
- do
+float calculate_height()
+{
+  float current_pressure;
+  int ret;
+  const float rho = 1.225; // kg/m³
+  const float g = 9.81;    // m/s²
+
+  do
   {
-    ret = Dps3xxPressureSensor2.measurePressureOnce(pressure2, oversampling);
-    Serial.print(ret);
-  }
-  while(ret!=0);
+    
+      ret = Dps3xxPressureSensor.measurePressureOnce(current_pressure, oversampling);
+      Serial.println(ret);
+      delay(100);
+    while(ret!=0)
+    {
+      Dps3xxPressureSensor.begin(Wire1);
+      ret = Dps3xxPressureSensor.measurePressureOnce(current_pressure, oversampling);
+       Serial.println(ret);
+    }
+    
+    if (pressure_index >= moving_average_size)
+    {
+      float height_difference = (initial_pressure - current_pressure) / (rho * g) * 100; // in centimeters
 
-  heightDifference =abs((pressure1 - pressure2) / (rho * g) * 100)-abs(justus/ (rho * g) * 100); // in Zentimetern
-  return heightDifference;
+      if (height_difference < -50 || height_difference > 100)
+      {
+        Serial.println("Invalid pressure reading, re-measuring...");
+        continue;
+      }
+    
+    } 
+    break;
+  } while (true);
+
+  update_initial_pressure(current_pressure);
+
+  float height_difference = (initial_pressure - current_pressure) / (rho * g) * 100; // in centimeters
+  return height_difference;
 }
