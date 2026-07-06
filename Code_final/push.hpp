@@ -2,7 +2,7 @@
 #include <tle94112-motor-ino.hpp>
 #include "SPI.h"
 
-#define duration 100
+#define duration 175
 Tle94112Ino controller = Tle94112Ino();
 
 Tle94112Motor aktor1(controller);
@@ -20,15 +20,15 @@ void init_mhb()
 {
   controller.begin();
   
-  aktor1.connect(aktor1.HIGHSIDE,controller.TLE_HB7);  //11
-  aktor2.connect(aktor2.HIGHSIDE,controller.TLE_HB11); //8
-  aktor3.connect(aktor3.HIGHSIDE,controller.TLE_HB10); //10
-  aktor4.connect(aktor4.HIGHSIDE,controller.TLE_HB9);  //7
-  aktor5.connect(aktor5.HIGHSIDE,controller.TLE_HB12);//9
-  aktor6.connect(aktor6.HIGHSIDE,controller.TLE_HB8); //12
-  aktor7.connect(aktor7.HIGHSIDE,controller.TLE_HB3);  
-  aktor8.connect(aktor8.HIGHSIDE,controller.TLE_HB4);
-  aktor9.connect(aktor9.HIGHSIDE,controller.TLE_HB6);
+  aktor1.connect(aktor1.HIGHSIDE,controller.TLE_HB8);
+  aktor2.connect(aktor2.HIGHSIDE,controller.TLE_HB12);
+  aktor3.connect(aktor3.HIGHSIDE,controller.TLE_HB6);
+  aktor4.connect(aktor4.HIGHSIDE,controller.TLE_HB7);
+  aktor5.connect(aktor5.HIGHSIDE,controller.TLE_HB3);
+  aktor6.connect(aktor6.HIGHSIDE,controller.TLE_HB4);
+  aktor7.connect(aktor7.HIGHSIDE,controller.TLE_HB11);
+  aktor8.connect(aktor8.HIGHSIDE,controller.TLE_HB9);
+  aktor9.connect(aktor9.HIGHSIDE,controller.TLE_HB10);
   kompressor.connect(kompressor.HIGHSIDE,controller.TLE_HB5);  
   kompressor.connect(kompressor.HIGHSIDE,controller.TLE_HB2);
   kompressor.connect(kompressor.HIGHSIDE,controller.TLE_HB1);

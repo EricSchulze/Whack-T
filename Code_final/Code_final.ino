@@ -37,7 +37,7 @@ int merken=0;
 
 
 void setup() {
-  pinMode(buttonPin, INPUT);
+  pinMode(buttonPin, INPUT_PULLDOWN);
   pinMode(buzzer_pin, OUTPUT);
   setAnalogWriteFrequency(buzzer_pin, buzzer_freq);
   Serial.begin(115200);
